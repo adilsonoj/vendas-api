@@ -4,7 +4,8 @@ const Cliente = mongoose.model('Cliente');
 module.exports ={
    async list(req, res){
         try {
-            const clientes = await Cliente.find();
+            const { page = 1 } = req.query;
+            const clientes = await Cliente.paginate({}, { page, limit:10 });
             return res.status(200).send({ clientes });
         } catch (error) {
             return res.status(400).send({error: error.errmsg});
@@ -19,6 +20,7 @@ module.exports ={
 
 
             const cliente = await Cliente.create(req.body);
+            cliente.password = undefined;
             return res.status(200).send({ cliente });
             
         } catch (error) {

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate');
+const bcrypt = require('bcryptjs');
 
 const ClienteSchema = new mongoose.Schema({
     nome:{
@@ -37,6 +38,13 @@ const ClienteSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+});
+
+ClienteSchema.pre('save', async function(next){
+    const hash = await bcrypt.hash(this.password, 10);
+    this.password = hash;
+
+    next();
 });
 
 ClienteSchema.plugin(mongoosePaginate);
