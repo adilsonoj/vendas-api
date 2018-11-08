@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate');
 const bcrypt = require('bcryptjs');
 
-const ClienteSchema = new mongoose.Schema({
+const UsuarioSchema = new mongoose.Schema({
     nome:{
         type:    String,
         require: true,
@@ -20,6 +20,12 @@ const ClienteSchema = new mongoose.Schema({
     telefone:{
         type:    String,
         require: true,
+    },
+    bandeiraCartao:[String],
+
+    produto:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Produto'
     },
     password:{
         type: String,
@@ -40,14 +46,14 @@ const ClienteSchema = new mongoose.Schema({
     },
 });
 
-ClienteSchema.pre('save', async function(next){
+UsuarioSchema.pre('save', async function(next){
     const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
 
     next();
 });
 
-ClienteSchema.plugin(mongoosePaginate);
+UsuarioSchema.plugin(mongoosePaginate);
 
-mongoose.model('Cliente',  ClienteSchema);
+module.exports = mongoose.model('Cliente',  UsuarioSchema);
 

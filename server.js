@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-require('./src/app/models/Cliente');
+require('./src/app/models/Usuario');
 
 app.use('/api', require("./src/routes"));
 

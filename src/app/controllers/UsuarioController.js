@@ -1,5 +1,5 @@
 const mongoose = require('../../database');
-const Cliente = mongoose.model('Cliente');
+const Cliente = require('../models/Usuario')
 
 module.exports ={
    async list(req, res){
