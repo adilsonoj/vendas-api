@@ -18,6 +18,10 @@ const ProdutoSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    usuario:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario'
+    },
     imagem:[],
     createAt:{
         type: Date,

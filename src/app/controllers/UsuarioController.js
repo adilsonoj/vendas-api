@@ -1,16 +1,28 @@
 const mongoose = require('../../database');
-const Cliente = require('../models/Usuario')
+const Cliente = require('../models/Usuario');
+const token = require('../servicos/token');
+
 
 module.exports ={
    async list(req, res){
         try {
             const { page = 1 } = req.query;
             const clientes = await Cliente.paginate({}, { page, limit:10 });
+            
             return res.status(200).send({ clientes });
         } catch (error) {
             return res.status(400).send({error: error.errmsg});
         }
         
+    },
+    async show(req, res){
+        
+        try {
+            const cliente = await Cliente.findById(req.params.id).populate('produto');
+            return res.status(200).send({ cliente });
+        } catch (error) {
+            return res.status(400).send({error: 'Usuário não encontrado'});
+        }
     },
     async create(req, res){
         const { email } = req.body;
@@ -21,16 +33,19 @@ module.exports ={
 
             const cliente = await Cliente.create(req.body);
             cliente.password = undefined;
-            return res.status(200).send({ cliente });
+            return res.status(200).send({ cliente, token: token({ id: cliente.id}) });
             
         } catch (error) {
-            return res.status(400).send({error: error.errmsg});
+            console.log(error)
+            return res.status(400).send({error: "erro ao criar asuario"});
         }
     },
 
     async delete(req, res){
+        console.log(req.params.id);
+        
         try {
-            await Cliente.findOneAndRemove(req.params.id);
+            await Cliente.findByIdAndDelete(req.params.id);
             return res.status(200);
         } catch (error) {
             return res.status(400).send({error:"erro ao excluir"});
@@ -40,7 +55,7 @@ module.exports ={
 
     async update(req, res){
         try {
-            const cliente = await Cliente.findOneAndUpdate(req.params.id, req.body, { new : true });
+            const cliente = await Cliente.findByIdAndUpdate(req.params.id, req.body, { new : true });
             return res.status(200).send({ cliente });
         } catch (error) {
             return res.status(400).send({error: error.errmsg})

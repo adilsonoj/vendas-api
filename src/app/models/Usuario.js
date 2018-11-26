@@ -23,10 +23,10 @@ const UsuarioSchema = new mongoose.Schema({
     },
     bandeiraCartao:[String],
 
-    produto:{
+    produto:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Produto'
-    },
+    }],
     password:{
         type: String,
         required: true,
