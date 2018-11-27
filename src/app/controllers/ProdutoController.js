@@ -1,4 +1,4 @@
-const mongoose = require('../../database');
+//const mongoose = require('../../database');
 const Produto = require('../models/Produto');
 
 module.exports = {

@@ -1,6 +1,6 @@
-const mongoose = require('../../database');
+//const mongoose = require('../../database');
 const Cliente = require('../models/Usuario');
-const token = require('../servicos/token');
+const token = require('../services/token');
 
 
 module.exports ={
@@ -9,7 +9,7 @@ module.exports ={
             const { page = 1 } = req.query;
             const clientes = await Cliente.paginate({}, { page, limit:10 });
             
-            return res.status(200).send({ clientes });
+            return res.status(200).send({ clientes, userId: req.userId });
         } catch (error) {
             return res.status(400).send({error: error.errmsg});
         }
@@ -37,7 +37,7 @@ module.exports ={
             
         } catch (error) {
             console.log(error)
-            return res.status(400).send({error: "erro ao criar asuario"});
+            return res.status(400).send({error: "erro ao criar usário"});
         }
     },
 
