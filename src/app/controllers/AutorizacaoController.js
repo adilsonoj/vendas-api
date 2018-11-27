@@ -1,13 +1,10 @@
-const mongoose = require('../../database');
+//const mongoose = require('../../database');
 const crypto = require("crypto");
 const Usuario = require('../models/Usuario');
 const bcrypt = require('bcryptjs');
-const token = require('../servicos/token');
-//const mailer = require('../../modules/mailer');
-/* 
-function generateToken(params = {}){
-    return jwt.sign(params ,  auth.secret,  { expiresIn: 86400 });
-}; */
+const token = require('../services/token');
+const mailer = require('../../modules/mailer');
+
 
 module.exports = {
 
@@ -16,17 +13,15 @@ async registro(req, res){
     try {
         
         if(await Usuario.findOne({email})){
-            console.log("achou");
-            return res.status(400).send({ error: 'Usuário existente'});
+            return res.status(400).send({ error: 'Usuário já existe'});
         }
-         
 
         const usuario = await Usuario.create(req.body);
 
         usuario.password = undefined;
         return res.send({ usuario, token: token({ id: usuario.id}) })
      } catch (error) {
-         return res.status(400).send({error: 'Registration failed'});
+         return res.status(400).send({error: 'Falha no registro'});
      }   
 
 },
@@ -37,28 +32,26 @@ async autenticar(req, res){
     const usuario = await Usuario.findOne( { email }).select('+password');
 
     if(!usuario)
-        return res.status(400).send({ error: 'Usuario not found'});
+        return res.status(400).send({ error: 'Usuario não encontrador'});
 
     if(!await bcrypt.compare(password, usuario.password))
-        return res.status(400).send({ error: 'Invalid password'});
+        return res.status(400).send({ error: 'Senha inválida'});
 
         usuario.password = undefined;
-
-        //const token = generateToken({ id: Usuario.id});
 
         res.send({ usuario, token: token({ id: usuario.id}) })
         
 
 },
 
-/* async forgotPassword(req, res){
+async esqueciSenha(req, res){
     const { email } = req.body;
    
     try {
         const usuario = await Usuario.findOne({ email });
         
         if(!Usuario) 
-            return res.status(400).send({ error: 'Usuario not found'});
+            return res.status(400).send({ error: 'Usuario não encontrado'});
 
         //criar token para trocar senha
         const token = crypto.randomBytes(20).toString('hex');
@@ -77,42 +70,41 @@ async autenticar(req, res){
             to: email,
             from: 'adilsonoj@yahoo.com.br',
             template: '/forgot_password',
-            context: {token}
+            context: { token }
         }, (err)=>{
             if (err)
-            return res.status(400).send({ error: 'Cannot send forgot password email'});
+            return res.status(400).send({ error: 'Não foi possível enviar email de recuperação de senha'});
 
             return res.send();
         });
 
     } catch (error) {
-        return res.status(400).send({ error: 'Error on forgot password, try again'});
+        console.log(error)
+        return res.status(400).send({ error: 'Erro em recuperar a senha, tente novamente'});
     }
-}, */
+},
 
-async resetPassword(req, res){
+async resetSenha(req, res){
     const { email, token, password }  = req.body;
 
-    const usuario = await Usuario.findOne({ email }).select('+passwordResetToken passwordResetExpires');
+    try {
+        const usuario = await Usuario.findOne({ email }).select('+passwordResetToken passwordResetExpires');
         
     if(!usuario) 
-        return res.status(400).send({ error: 'Usuario not found'});
+        return res.status(400).send({ error: 'Usuario não encontrado'});
 
     if(token != usuario.passwordResetToken)
-        return res.status(400).send({ error: 'Token invalid'});
+        return res.status(400).send({ error: 'Token inválido'});
 
     const now = new Date();
     if(now > usuario.passwordResetExpires)
-        return res.status(400).send({ error: 'Token expired, gernerate a new one'});
+        return res.status(400).send({ error: 'Token expirou, gere novamente'});
 
     usuario.password = password;
 
     await usuario.save();
 
     return res.send();
-
-    try {
-        
     } catch (error) {
         return res.status(400).send({ error: 'Cannot send forgot password email'});
 
