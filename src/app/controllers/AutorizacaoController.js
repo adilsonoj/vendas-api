@@ -13,7 +13,7 @@ async registro(req, res){
     try {
         
         if(await Usuario.findOne({email})){
-            return res.status(400).send({ error: 'Usuário já existe'});
+            return res.status(400).send({ error: 'Usuário já existe' });
         }
 
         const usuario = await Usuario.create(req.body);
@@ -21,7 +21,7 @@ async registro(req, res){
         usuario.password = undefined;
         return res.send({ usuario, token: token({ id: usuario.id}) })
      } catch (error) {
-         return res.status(400).send({error: 'Falha no registro'});
+         return res.status(400).send({ error: 'Falha no registro' });
      }   
 
 },
@@ -32,7 +32,7 @@ async autenticar(req, res){
     const usuario = await Usuario.findOne( { email }).select('+password');
 
     if(!usuario)
-        return res.status(400).send({ error: 'Usuario não encontrador'});
+        return res.status(400).send({ error: 'Usuario não encontrador' });
 
     if(!await bcrypt.compare(password, usuario.password))
         return res.status(400).send({ error: 'Senha inválida'});
@@ -51,7 +51,7 @@ async esqueciSenha(req, res){
         const usuario = await Usuario.findOne({ email });
         
         if(!Usuario) 
-            return res.status(400).send({ error: 'Usuario não encontrado'});
+            return res.status(400).send({ error: 'Usuario não encontrado' });
 
         //criar token para trocar senha
         const token = crypto.randomBytes(20).toString('hex');
@@ -73,14 +73,14 @@ async esqueciSenha(req, res){
             context: { token }
         }, (err)=>{
             if (err)
-            return res.status(400).send({ error: 'Não foi possível enviar email de recuperação de senha'});
+            return res.status(400).send({ error: 'Não foi possível enviar email de recuperação de senha' });
 
             return res.send();
         });
 
     } catch (error) {
         console.log(error)
-        return res.status(400).send({ error: 'Erro em recuperar a senha, tente novamente'});
+        return res.status(400).send({ error: 'Erro ao recuperar a senha, tente novamente' });
     }
 },
 
@@ -91,14 +91,14 @@ async resetSenha(req, res){
         const usuario = await Usuario.findOne({ email }).select('+passwordResetToken passwordResetExpires');
         
     if(!usuario) 
-        return res.status(400).send({ error: 'Usuario não encontrado'});
+        return res.status(400).send({ error: 'Usuario não encontrado '});
 
     if(token != usuario.passwordResetToken)
-        return res.status(400).send({ error: 'Token inválido'});
+        return res.status(400).send({ error: 'Token inválido' });
 
     const now = new Date();
     if(now > usuario.passwordResetExpires)
-        return res.status(400).send({ error: 'Token expirou, gere novamente'});
+        return res.status(400).send({ error: 'Token expirou, gere um novo' });
 
     usuario.password = password;
 
@@ -106,7 +106,7 @@ async resetSenha(req, res){
 
     return res.send();
     } catch (error) {
-        return res.status(400).send({ error: 'Cannot send forgot password email'});
+        return res.status(400).send({ error: 'Não foi possível alterar a senha' });
 
     }
 }
