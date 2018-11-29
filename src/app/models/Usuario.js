@@ -22,6 +22,8 @@ const UsuarioSchema = new mongoose.Schema({
         require: true,
     },
     bandeiraCartao:[String],
+    
+    entrega: Boolean,
 
     produto:[{
         type: mongoose.Schema.Types.ObjectId,

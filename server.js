@@ -2,9 +2,9 @@ const express = require("express");
 
 const app = express();
 
-app.use(express.json());
+require('./src/database')
 
-//require('./src/app/models/Usuario');
+app.use(express.json());
 
 app.use('/api', require("./src/routes"));
 

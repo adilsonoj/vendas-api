@@ -20,7 +20,7 @@ const ProdutoSchema = new mongoose.Schema({
     },
     usuario:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'Cliente'
     },
     imagem:[],
     createAt:{

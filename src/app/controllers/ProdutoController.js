@@ -1,4 +1,3 @@
-//const mongoose = require('../../database');
 const Produto = require('../models/Produto');
 
 module.exports = {
@@ -15,11 +14,12 @@ module.exports = {
     },
 
     async show(req, res){
-        
+        console.log(req.params.id)
         try {
-            const produto = await Produtos.findById(req.params.id);
+            const produto = await Produto.findById(req.params.id).populate('usuario');
             return res.status(200).send({ produto });
         } catch (error) {
+            console.log(error)
             return res.status(400).send({error: 'Produto não encontrado'});
         }
     },

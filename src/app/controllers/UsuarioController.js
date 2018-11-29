@@ -1,4 +1,3 @@
-//const mongoose = require('../../database');
 const Cliente = require('../models/Usuario');
 const token = require('../services/token');
 
