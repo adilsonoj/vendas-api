@@ -14,7 +14,7 @@ routes.put('/clientes/:id', UsuarioController.update);
 
 routes.get('/produtos', ProdutoController.list);
 routes.get('/produtos/:id', ProdutoController.show);
-routes.post('/produtos', ProdutoController.create);
+routes.post('/produtos',auth, ProdutoController.create);
 routes.delete('/produtos/:id', ProdutoController.delete);
 routes.put('/produtos/:id', ProdutoController.update);
 
