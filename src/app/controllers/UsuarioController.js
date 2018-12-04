@@ -1,4 +1,5 @@
 const Cliente = require('../models/Usuario');
+const Produto = require('../models/Produto');
 const token = require('../services/token');
 
 
@@ -41,11 +42,21 @@ module.exports ={
     },
 
     async delete(req, res){
-        console.log(req.params.id);
+        //console.log(req.params.id);
         
         try {
-            await Cliente.findByIdAndDelete(req.params.id);
-            return res.status(200);
+            const cliente = await Cliente.findOne({ '_id': req.params.id })
+            Promise.all(
+                cliente.produto.map( client=>{
+                    console.log(client)
+                    Produto.findOneAndRemove({ '_id': client})
+                })
+                )
+
+            await Cliente.findOneAndRemove({ '_id': req.params.id });
+
+           
+            return res.send();
         } catch (error) {
             return res.status(400).send({error:"erro ao excluir"});
         }

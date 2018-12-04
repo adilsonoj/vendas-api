@@ -23,6 +23,7 @@ const ProdutoSchema = new mongoose.Schema({
         ref: 'Cliente'
     },
     imagem:[],
+    ativo:Boolean,
     createAt:{
         type: Date,
         default: Date.now,
