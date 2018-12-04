@@ -30,7 +30,7 @@ module.exports = {
         try {
             const produto = await Produto.create(req.body);
 
-            //Atualiza cliente adicionando o produto
+            //Atualiza cliente LOGADO adicionando o produto
             await Cliente.findByIdAndUpdate(req.userId, {
                 $addToSet: { produto: produto.id }
             },
@@ -51,6 +51,21 @@ module.exports = {
     async delete(req, res) {
         try {
             await Produto.findByIdAndDelete(req.params.id);
+
+             //Atualiza cliente LOGADO removendo o produto
+            await Cliente.findByIdAndUpdate(req.userId, {
+                $pull: { produto: req.params.id }
+            },
+                { safe: true },
+                (err, model) => {
+                    if (err) {
+                        console.log(err);
+                        return res.status(400).send({ error: "erro ao atualizar produto de Cliente" });
+                    }
+
+                })
+
+
             return res.send();
         } catch (error) {
             return res.status(400).send({ error: "erro ao excluir produto" });
@@ -61,6 +76,7 @@ module.exports = {
     async update(req, res) {
         try {
             const produto = await Produto.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
             return res.status(200).send({ produto });
         } catch (error) {
             return res.status(400).send({ error: error.errmsg })
