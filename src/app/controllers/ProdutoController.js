@@ -3,10 +3,10 @@ const Cliente = require('../models/Usuario');
 
 module.exports = {
 
-    async list(req, res) {
+    async index(req, res) {
         try {
             const { page = 1 } = req.query;
-            const produtos = await Produto.paginate({}, { page, limit: 10 });
+            const produtos = await Produto.paginate({}, { page, limit: 10,  populate: 'usuario' });
             return res.status(200).send({ produtos });
         } catch (error) {
             return res.status(400).send({ error: error.errmsg });
@@ -25,9 +25,10 @@ module.exports = {
         }
     },
 
-    async create(req, res) {
+    async store(req, res) {
         console.log({ userId: req.userId })
         try {
+            req.body.usuario = req.userId;
             const produto = await Produto.create(req.body);
 
             //Atualiza cliente LOGADO adicionando o produto
@@ -48,7 +49,7 @@ module.exports = {
             return res.status(400).send({ error: "erro ao incluir" });
         }
     },
-    async delete(req, res) {
+    async destroy(req, res) {
         try {
             await Produto.findByIdAndDelete(req.params.id);
 

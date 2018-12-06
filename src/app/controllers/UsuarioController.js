@@ -4,14 +4,14 @@ const token = require('../services/token');
 
 
 module.exports ={
-   async list(req, res){
+   async index(req, res){
         try {
             const { page = 1 } = req.query;
             const clientes = await Cliente.paginate({}, { page, limit:10 });
             
             return res.status(200).send({ clientes, userId: req.userId });
         } catch (error) {
-            return res.status(400).send({error: error.errmsg});
+            return res.status(400).send({error: "falha na lista"});
         }
         
     },
@@ -24,12 +24,11 @@ module.exports ={
             return res.status(400).send({error: 'Usuário não encontrado'});
         }
     },
-    async create(req, res){
+    async store(req, res){
         const { email } = req.body;
         try {
             if(await Cliente.findOne({ email }))
                 return res.status(400).send({ erro: 'Usuário existente'});
-
 
             const cliente = await Cliente.create(req.body);
             cliente.password = undefined;
@@ -41,17 +40,14 @@ module.exports ={
         }
     },
 
-    async delete(req, res){
-        //console.log(req.params.id);
-        
+    async destroy(req, res){
         try {
             const cliente = await Cliente.findOne({ '_id': req.params.id })
             Promise.all(
-                cliente.produto.map( client=>{
-                    console.log(client)
-                    Produto.findOneAndRemove({ '_id': client})
-                })
-                )
+                cliente.produto.map( async cliente_id => {
+                    console.log("delete", cliente_id)
+                    await Produto.findOneAndRemove({ '_id': cliente_id })
+                }));
 
             await Cliente.findOneAndRemove({ '_id': req.params.id });
 
